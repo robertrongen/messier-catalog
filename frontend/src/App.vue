@@ -58,7 +58,6 @@ export default {
   }
   .image-item {
     width: 20%; /* Each item takes up 10% of the container width, fitting 10 in a row */
-    padding: 5px; /* Adjust padding to manage spacing */
   }
   .image-item img {
     width: 100%; /* Make image fill the container */
@@ -74,7 +73,7 @@ export default {
   }
   @media (min-width: 768px) {
     .image-item {
-      width: 10%; /* Fit 10 images per row on medium and larger screens */
+      width: 8%; /* Fit 10 images per row on medium and larger screens */
     }
   }
 </style>
