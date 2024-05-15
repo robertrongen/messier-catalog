@@ -14,8 +14,13 @@ export default {
         messierObjects: Array
     },
     methods: {
-    getImagePath(object) {
-        return object.Captured ? `/images/pos/${object.Messier}.jpg` : `/images/neg/${object.Messier}.jpg`;
+        getImagePath(object) {
+            try {
+                return require(`@/assets/${object.Captured ? 'pos' : 'neg'}/${object.Messier}.jpg`);
+            } catch (e) {
+                console.error("Failed to load image", e);
+                return '';
+            }
         }
     }
 }

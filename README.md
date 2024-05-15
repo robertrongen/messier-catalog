@@ -1,5 +1,8 @@
 # messier-catalog
 
+Image source: https://in-the-sky.org/data/catalogue.php
+Atlas and datbase source: https://www.datastro.eu/explore/dataset/ngc-ic-messier-catalog/images/?sort=name
+
 # Installation
 ## Frontend: Install npm packages
 `npm install`

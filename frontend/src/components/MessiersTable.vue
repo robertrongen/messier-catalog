@@ -30,7 +30,7 @@
                     <td>{{ object.Type }}</td>
                     <td>{{ object.Season }}</td>
                     <td>{{ object.Magnitude }}</td>
-                    <td>{{ object.Cons }}</td>
+                    <td>{{ object.Const }}</td>
                     <td>{{ object.Constellation }}</td>
                     <td>{{ object.Latin }}</td>
                     <td>{{ object.RA }}</td>
@@ -51,7 +51,7 @@
 export default {
     name: 'MessiersTable',
     props: {
-        msg: String
+        messierObjects: Array
     }
 }
 </script>

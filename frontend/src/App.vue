@@ -1,4 +1,3 @@
-<!-- frontend/src/App.vue -->
 <template>
   <div id="app">
     <div class="tabs">
@@ -10,9 +9,9 @@
 </template>
 
 <script>
-import MessiersTable from './components/MessiersTable'
-import MessiersBox from './components/MessiersBox'
-import axios from 'axios'
+import axios from 'axios';
+import MessiersTable from './components/MessiersTable';
+import MessiersBox from './components/MessiersBox';
 
 export default {
   name: 'App',
@@ -24,7 +23,7 @@ export default {
     return {
       currentTab: 'table',
       messierObjects: []
-    }
+    };
   },
   computed: {
     currentComponent() {
@@ -32,24 +31,50 @@ export default {
     }
   },
   mounted() {
-    axios.get('/api/messier')
-      .then(response => {
-        this.messierObjects = response.data;
-      })
-      .catch(error => {
-        console.error("Error fetching Messier objects:", error);
-      });
+    this.fetchMessierObjects();
+  },
+  methods: {
+    fetchMessierObjects() {
+      axios.get('http://localhost:5000/api/messier')
+        .then(response => {
+          this.messierObjects = response.data;
+        })
+        .catch(error => {
+          console.error("Error fetching Messier objects:", error);
+        });
+    }
   }
 }
 </script>
 
 <style>
-#app {
-  text-align: center;
-}
-.tabs button {
-  padding: 10px;
-  margin: 5px;
-  cursor: pointer;
-}
+  #app {
+    text-align: center;
+  }
+  .image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .image-item {
+    width: 20%; /* Each item takes up 10% of the container width, fitting 10 in a row */
+    padding: 5px; /* Adjust padding to manage spacing */
+  }
+  .image-item img {
+    width: 100%; /* Make image fill the container */
+    height: auto; /* Keep the aspect ratio */
+  }
+  .caption {
+    text-align: center;
+  }
+  .tabs button {
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  @media (min-width: 768px) {
+    .image-item {
+      width: 10%; /* Fit 10 images per row on medium and larger screens */
+    }
+  }
 </style>
