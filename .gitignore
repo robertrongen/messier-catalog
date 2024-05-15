@@ -1,0 +1,5 @@
+AstroCaps.db-journal
+AstroCaps.sqbpro
+catalogue-de-messier.json
+/node_modules/*
+/venv/*
