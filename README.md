@@ -1,13 +1,15 @@
 # messier-catalog
 
 # Installation
-## Install npm packages
+## Frontend: Install npm packages
 `npm install`
-## Add .env variables
+## Backend
+`cd backend`
+### Add .env variables
 Create and fill in .env keys using example.env for:
 - SESSION_KEY: Create Web session key:
   `python -c 'import os; print(os.urandom(24).hex())'`
-## Activate virtual env for Python (venv)
+### Activate virtual env for Python (venv)
 - Create a new virtual environment
 `python3 -m venv venv`
 - Activate the new environment
@@ -23,20 +25,18 @@ Create and fill in .env keys using example.env for:
 `deactivate`
 - Remove the current virtual environment folder
 `rm -r venv`
-
-## Interact with database
+### Interact with database
 `sqlite3 AstroCaps.db`
 `.tables`
 `SELECT * FROM MessierObjects LIMIT 10;`
-
 ## Define services
-Vue server:
-`cd astro-caps-frontend`
+Frontend/Vue server:
+`cd frontend`
 `npm run serve`
 or create a production build:
 `npm run build`
 
-Flask server:
+Backend/Flask server:
 - app.py - runs flask website
 - control.py - 
 
