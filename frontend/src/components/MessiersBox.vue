@@ -1,45 +1,72 @@
+<!-- frontend/src/components/MessiersBox.vue -->
 <template>
     <div class="image-grid">
-        <div v-for="object in messierObjects" :key="object.Messier" class="image-item">
-            <img :src="getImagePath(object)" :alt="`Messier ${object.Messier}`" />
-            <div class="caption">{{ object.Name }}</div>
+        <div 
+            v-for="object in messierObjects" 
+            :key="object.Messier"
+            class="image-item"
+            @mouseover="hoveredImage = object.Messier"
+            @mouseleave="hoveredImage = null"
+        >
+            <div class="imgtitle">
+                {{ object.Messier }}
+                <br/>
+                {{ object.Constellation }}
+            </div>
+            <router-link :to="{ name: 'MessierDetail', params: { id: object.Messier } }">
+                <img 
+                    :src="getImagePath(object)" 
+                    :alt="`Messier ${object.Messier}`" 
+                    :id="`img-${object.Messier}`"
+                />
+            </router-link>
+            <div class="caption">
+                {{ object.Type }}
+                <br/>
+                {{ object.Season }}
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-export default {
-    name: 'MessiersBox',
-    props: {
-        messierObjects: Array
-    },
-    methods: {
-        getImagePath(object) {
-            try {
-                return require(`@/assets/${object.Captured ? 'pos' : 'neg'}/${object.Messier}.jpg`);
-            } catch (e) {
-                console.error("Failed to load image", e);
-                return '';
-            }
+    export default {
+        name: 'MessiersBox',
+        props: {
+            messierObjects: Array
+        },
+        data() {
+            return {
+            hoveredImage: null
+            };
+        },
+        methods: {
+            getImagePath(object) {
+                const isHovered = this.hoveredImage === object.Messier;
+                const type = object.Captured ? 'pos' : 'neg';
+                const hoverType = object.Captured ? 'roro' : 'pos';
+                return isHovered 
+                    ? require(`@/assets/${hoverType}/${object.Messier}.jpg`) 
+                    : require(`@/assets/${type}/${object.Messier}.jpg`);
+            },
         }
     }
-}
 </script>
 
 <style>
-.image-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-.image-item {
-    margin: 5px;
-}
-.image-item img {
-    width: 180px;  /* Or adjust based on your CSS Grid setup */
-    height: 180px;
-}
-.caption {
-    text-align: center;
-}
-</style>  
+    .image-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .image-item {
+        padding: 5px; 
+    }
+    .image-item img {
+        width: 100%; /* Make image fill the container */
+        height: auto; /* Keep the aspect ratio */
+    }
+    .caption {
+        text-align: center;
+    }
+</style>

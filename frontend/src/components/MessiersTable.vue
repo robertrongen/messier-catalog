@@ -1,3 +1,4 @@
+<!-- frontend/src/components/MessiersTable.vue -->
 <template>
     <div class="MessiersTable">
         <table>
@@ -7,40 +8,36 @@
                     <th>NGC</th>
                     <th>Name</th>
                     <th>Type</th>
+                    <th>Sub Type</th>
                     <th>Season</th>
-                    <th>Magnitude</th>
-                    <th>Cons</th>
                     <th>Constellation</th>
-                    <th>Latin</th>
-                    <th>RA</th>
-                    <th>Dec</th>
-                    <th>Distance (light-years)</th>
+                    <th>Magnitude</th>
                     <th>Size</th>
-                    <th>Discoverer</th>
-                    <th>Year of Discovery</th>
+                    <th>Distance (ly)</th>
+                    <th>Right Ascension</th>
+                    <th>Declination</th>
                     <th>Captured</th>
                     <th>Capture Year</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="object in messierObjects" :key="object.Messier">
-                    <td>{{ object.Messier }}</td>
+                    <td><router-link :to="{ name: 'MessierDetail', params: { id: object.Messier } }">{{ object.Messier }}</router-link></td>
                     <td>{{ object.NGC }}</td>
                     <td>{{ object.Name }}</td>
                     <td>{{ object.Type }}</td>
+                    <td>{{ object.SubType }}</td>
                     <td>{{ object.Season }}</td>
-                    <td>{{ object.Magnitude }}</td>
-                    <td>{{ object.Const }}</td>
                     <td>{{ object.Constellation }}</td>
-                    <td>{{ object.Latin }}</td>
-                    <td>{{ object.RA }}</td>
-                    <td>{{ object.Dec }}</td>
-                    <td>{{ object.Distance }}</td>
+                    <td>{{ object.Magnitude }}</td>
                     <td>{{ object.Size }}</td>
-                    <td>{{ object.Discoverer }}</td>
-                    <td>{{ object.Year }}</td>
+                    <td>{{ object.Distance }}</td>
+                    <td>{{ object.RightAscension }}</td>
+                    <td>{{ object.Declination }}</td>
                     <td>{{ object.Captured ? 'Yes' : 'No' }}</td>
                     <td>{{ object.CapYear }}</td>
+                    <td>{{ object.Remarks }}</td>
                 </tr>
             </tbody>
         </table>

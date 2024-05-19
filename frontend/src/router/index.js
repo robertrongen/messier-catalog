@@ -1,17 +1,33 @@
-// frontend/src/router/index.js
-import Vue from 'vue';
-import Router from 'vue-router';
-import MessiersTable from '../components/MessiersTable';
+// src/router/index.js
+import { createRouter, createWebHistory } from 'vue-router';
+import MessiersTable from '../components/MessiersTable.vue';
+import MessiersBox from '../components/MessiersBox.vue';
+import MessierDetail from '../components/MessierDetail.vue';
 
-Vue.use(Router);
+const routes = [
+    {
+        path: '/',
+        name: 'Box',
+        component: MessiersBox,
+        props: route => ({ messierObjects: route.query.messierObjects }) // Pass messierObjects as props
+    },
+    {
+        path: '/table',
+        name: 'Table',
+        component: MessiersTable,
+        props: route => ({ messierObjects: route.query.messierObjects }) // Pass messierObjects as props
+    },
+    {
+        path: '/messier/:id',
+        name: 'MessierDetail',
+        component: MessierDetail,
+        props: route => ({ id: route.params.id, messierObjects: route.query.messierObjects }) // Pass messierObjects as props
+    }
+];
 
-export default new Router({
-    routes: [
-        {
-            path: '/',
-            name: 'Messiers',
-            component: MessiersTable
-        },
-        // Additional routes can be added here
-    ]
+const router = createRouter({
+    history: createWebHistory(),
+    routes
 });
+
+export default router;

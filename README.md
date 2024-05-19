@@ -29,7 +29,7 @@ Create and fill in .env keys using example.env for:
 - Remove the current virtual environment folder
 `rm -r venv`
 ### Interact with database
-`sqlite3 AstroCaps.db`
+Run `sqlite3 AstroCaps.db` to create a new database file named `AstroCaps.db` or to start interacting with it
 `.tables`
 `SELECT * FROM MessierObjects LIMIT 10;`
 ## Define services

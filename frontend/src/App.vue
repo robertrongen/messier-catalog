@@ -1,33 +1,51 @@
+<!-- frontend/src/App.vue -->
 <template>
   <div id="app">
     <div class="tabs">
-      <button @click="currentTab = 'table'">Table View</button>
-      <button @click="currentTab = 'box'">Box View</button>
+      <button @click="goToBoxView">Box View</button>
+      <button @click="goToTableView">Table View</button>
     </div>
-    <component :is="currentComponent" :messierObjects="messierObjects"/>
+    <FilterSortOptions 
+      v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
+      @filter="filterMessierObjects" 
+      @sort="sortMessierObjects" 
+    />
+    <component 
+      :is="currentComponent" 
+      :messierObjects="filteredMessierObjects" 
+      v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
+    ></component>
+    <router-view :messierObjects="messierObjects"></router-view> <!-- Pass messierObjects as props -->
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import MessiersTable from './components/MessiersTable';
-import MessiersBox from './components/MessiersBox';
+import FilterSortOptions from './components/FilterSortOptions.vue';
+import MessiersTable from './components/MessiersTable.vue';
+import MessiersBox from './components/MessiersBox.vue';
 
 export default {
   name: 'App',
   components: {
+    FilterSortOptions,
     MessiersTable,
     MessiersBox
   },
   data() {
     return {
-      currentTab: 'table',
-      messierObjects: []
+      currentTab: 'box',
+      messierObjects: [],
+      filteredMessierObjects: [],
+      currentMessier: null,
+      filterQuery: '',
+      filterCaptured: null,
+      sortOrder: 'number'
     };
   },
   computed: {
     currentComponent() {
-      return this.currentTab === 'table' ? MessiersTable : MessiersBox;
+      return this.currentTab === 'box' ? MessiersBox : MessiersTable;
     }
   },
   mounted() {
@@ -35,13 +53,39 @@ export default {
   },
   methods: {
     fetchMessierObjects() {
-      axios.get('http://localhost:5000/api/messier')
-        .then(response => {
-          this.messierObjects = response.data;
-        })
-        .catch(error => {
-          console.error("Error fetching Messier objects:", error);
-        });
+    const params = {
+      sort_by: this.sortOrder,
+      filter_captured: this.filterCaptured,
+    };
+
+    axios.get('http://localhost:5000/api/messier', { params })
+      .then(response => {
+        this.messierObjects = response.data;
+        this.filteredMessierObjects = response.data;
+      })
+      .catch(error => {
+        console.error("Error fetching Messier objects:", error);
+      });
+    },
+    filterMessierObjects(query, captured = null) {
+      this.filterQuery = query;
+      this.filterCaptured = captured;
+      this.fetchMessierObjects();
+    },
+    sortMessierObjects(order) {
+      this.sortOrder = order;
+      this.fetchMessierObjects();
+    },
+    goToBoxView() {
+      this.currentTab = 'box';
+      this.$router.push({ name: 'Box' });
+    },
+    goToTableView() {
+      this.currentTab = 'table';
+      this.$router.push({ name: 'Table' });
+    },
+    onRouteChange() {
+      // console.log('Route changed');
     }
   }
 }
@@ -73,7 +117,7 @@ export default {
   }
   @media (min-width: 768px) {
     .image-item {
-      width: 8%; /* Fit 10 images per row on medium and larger screens */
+      width: 12%; /* Fit 10 images per row on medium and larger screens */
     }
   }
 </style>
