@@ -58,10 +58,19 @@ class MessierObject(db.Model):
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():
     sort_by = request.args.get('sort_by', 'number')
+    filter_season = request.args.get('filter_season')
+    filter_type = request.args.get('filter_type')
+    filter_constellation = request.args.get('filter_constellation')
     filter_captured = request.args.get('filter_captured')
 
     query = MessierObject.query
 
+    if filter_season:
+        query = query.filter_by(Season=filter_season)
+    if filter_type:
+        query = query.filter_by(Type=filter_type)
+    if filter_constellation:
+        query = query.filter_by(Constellation=filter_constellation)
     if filter_captured is not None:
         query = query.filter_by(Captured=int(filter_captured))
 

@@ -65,18 +65,15 @@
             }
         },
         mounted() {
-            console.log('Mounted lifecycle hook called');
             this.fetchMessierDetail();
         },
         watch: {
             id() {
-                console.log('ID prop changed:', this.id);
                 this.fetchMessierDetail();
             }
         },
         methods: {
             fetchMessierDetail() {
-                console.log('Fetching details for Messier ID:', this.id);
                 const messier = this.messierObjects.find(m => m.Messier === this.id);
                 if (messier) {
                     this.messier = messier;

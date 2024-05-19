@@ -1,12 +1,12 @@
 <!-- frontend/src/App.vue -->
 <template>
-  <div id="app">
+  <div id="app" class="dark:bg-gray-900 dark:text-white">
     <div class="tabs">
-      <button @click="goToBoxView">Box View</button>
-      <button @click="goToTableView">Table View</button>
+      <button @click="goToBoxView" class="bg-gray-800 text-white">Box View</button>
+      <button @click="goToTableView" class="bg-gray-800 text-white">Table View</button>
     </div>
     <FilterSortOptions 
-      v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
+      v-if="currentTab !== 'detail'" 
       @filter="filterMessierObjects" 
       @sort="sortMessierObjects" 
     />
@@ -38,7 +38,6 @@ export default {
       messierObjects: [],
       filteredMessierObjects: [],
       currentMessier: null,
-      filterQuery: '',
       filterCaptured: null,
       sortOrder: 'number'
     };
@@ -53,12 +52,15 @@ export default {
   },
   methods: {
     fetchMessierObjects() {
-    const params = {
-      sort_by: this.sortOrder,
-      filter_captured: this.filterCaptured,
-    };
+      const params = {
+        sort_by: this.sortOrder,
+        filter_season: this.filterSeason,
+        filter_type: this.filterType,
+        filter_constellation: this.filterConstellation,
+        filter_captured: this.filterCaptured
+      };
 
-    axios.get('http://localhost:5000/api/messier', { params })
+      axios.get('http://localhost:5000/api/messier', { params })
       .then(response => {
         this.messierObjects = response.data;
         this.filteredMessierObjects = response.data;
@@ -67,8 +69,10 @@ export default {
         console.error("Error fetching Messier objects:", error);
       });
     },
-    filterMessierObjects(query, captured = null) {
-      this.filterQuery = query;
+    filterMessierObjects({ season, type, constellation, captured }) {
+      this.filterSeason = season;
+      this.filterType = type;
+      this.filterConstellation = constellation;
       this.filterCaptured = captured;
       this.fetchMessierObjects();
     },
