@@ -1,13 +1,10 @@
-// tailwind.config.js
+// frontend/tailwind.config.js
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ['./src/**/*.{vue,js,ts,jsx,tsx}', './public/index.html'],
-  darkMode: 'class', // Enable dark mode
+  darkMode: 'class', // Enable dark mode with a class
+  content: ["./src/**/*.{html,js,vue}"],
   theme: {
-    extend: {},
-  },
-  variants: {
     extend: {},
   },
   plugins: [],
 }
-

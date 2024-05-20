@@ -1,21 +1,24 @@
 <!-- frontend/src/components/FilterSortOptions.vue -->
 <template>
-    <div class="filter-sort">
-        <div class="filter">
-            <select v-model="filterSeason" @change="onFilter">
+    <div class="flex justify-between p-4">
+        <div class="flex space-x-4">
+            <select v-model="filterSeason" @change="onFilter"
+                class="filter-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
                 <option value="">All Seasons</option>
-                <option value="Autumn">Autumn</option>
                 <option value="Winter">Winter</option>
                 <option value="Spring">Spring</option>
                 <option value="Summer">Summer</option>
+                <option value="Autumn">Autumn</option>
             </select>
-            <select v-model="filterType" @change="onFilter">
+            <select v-model="filterType" @change="onFilter"
+                class="filter-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
                 <option value="">All Types</option>
                 <option value="Nebula">Nebula</option>
                 <option value="Cluster">Cluster</option>
                 <option value="Galaxy">Galaxy</option>
             </select>
-            <select v-model="filterConstellation" @change="onFilter">
+            <select v-model="filterConstellation" @change="onFilter"
+                class="filter-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
                 <option value="">All Constellations</option>
                 <option value="Andromeda">Andromeda</option>
                 <option value="Aquarius">Aquarius</option>
@@ -51,14 +54,16 @@
                 <option value="Virgo">Virgo</option>
                 <option value="Vulpecula">Vulpecula</option>
             </select>
-            <select v-model="filterCaptured" @change="onFilter">
+            <select v-model="filterCaptured" @change="onFilter"
+                class="filter-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
                 <option value="">All</option>
                 <option value="1">Captured</option>
                 <option value="0">Not Captured</option>
             </select>
         </div>
-        <div class="sort">
-            <select v-model="sortOrder" @change="onSort">
+        <div class="flex items-center space-x-4">
+            <select v-model="sortOrder" @change="onSort"
+                class="sort-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
                 <option value="number">Sort by Number</option>
                 <option value="season">Sort by Season</option>
                 <option value="type">Sort by Type</option>
@@ -66,49 +71,60 @@
                 <option value="dec">Sort by Declination</option>
             </select>
         </div>
+        <div class="flex items-center">
+            <input type="checkbox" id="reverseSort" v-model="reverseSort" @change="onSort"
+                class="form-checkbox h-5 w-5 text-gray-600 dark:text-gray-400">
+            <label for="reverseSort" class="ml-2 dark:text-white">Reverse Order</label>
+        </div>
     </div>
 </template>
 
 <script>
-    export default {
-        name: 'FilterSortOptions',
-        data() {
-            return {
-                filterCaptured: '',
-                filterSeason: '',
-                filterType: '',
-                filterConstellation: '',
-                sortOrder: 'number'
-            };
+export default {
+    name: 'FilterSortOptions',
+    data() {
+        return {
+            filterCaptured: '',
+            filterSeason: '',
+            filterType: '',
+            filterConstellation: '',
+            sortOrder: 'number',
+            reverseSort: false
+        };
+    },
+    methods: {
+        onFilter() {
+            this.$emit('filter', {
+                captured: this.filterCaptured,
+                season: this.filterSeason,
+                type: this.filterType,
+                constellation: this.filterConstellation,
+            });
         },
-        methods: {
-            onFilter() {
-                this.$emit('filter', {
-                    captured: this.filterCaptured,
-                    season: this.filterSeason,
-                    type: this.filterType,
-                    constellation: this.filterConstellation,
-                });
-            },
-            onSort() {
-                this.$emit('sort', this.sortOrder);
-            }
+        onSort() {
+            this.$emit('sort', {
+                sortOrder: this.sortOrder,
+                reverseSort: this.reverseSort
+            });
         }
     }
+}
 </script>
 
 <style>
-    .filter-sort {
-        display: flex;
-        justify-content: space-between;
-        margin: 10px 0;
-    }
-    .filter input,
-    .filter select {
-        padding: 8px;
-        margin-right: 5px;
-    }
-    .sort select {
-        padding: 8px;
-    }
+.filter-sort {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.filter input,
+.filter select {
+    padding: 8px;
+    margin-right: 5px;
+}
+
+.sort select {
+    padding: 8px;
+}
 </style>

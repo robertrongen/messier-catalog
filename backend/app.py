@@ -22,10 +22,6 @@ db = SQLAlchemy(app)
 CORS(app)
 migrate = Migrate(app, db)
 
-# app.debug = True
-# toolbar = DebugToolbarExtension(app)
-# app.logger.debug(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
-
 class MessierObject(db.Model):
     __tablename__ = 'MessierObjects'
     Number = db.Column(db.String, primary_key=True)
@@ -58,13 +54,13 @@ class MessierObject(db.Model):
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():
     sort_by = request.args.get('sort_by', 'number')
+    reverse_sort = request.args.get('reverse_sort', 'false').lower() == 'true'
     filter_captured = request.args.get('filter_captured')
     filter_season = request.args.get('filter_season')
     filter_type = request.args.get('filter_type')
     filter_constellation = request.args.get('filter_constellation')
 
     query = MessierObject.query
-
     if filter_captured:
         query = query.filter_by(Captured=int(filter_captured))
     if filter_season:
@@ -74,18 +70,24 @@ def get_all_messier_objects():
     if filter_constellation:
         query = query.filter_by(Constellation=filter_constellation)
 
-    if sort_by == 'number':
-        query = query.order_by(MessierObject.Number.asc())
-    elif sort_by == 'season':
-        query = query.order_by(MessierObject.Season.asc())
+    if sort_by == 'season':
+        order = MessierObject.Season
     elif sort_by == 'type':
-        query = query.order_by(MessierObject.Type.asc())
+        order = MessierObject.Type
     elif sort_by == 'magnitude':
-        query = query.order_by(MessierObject.Magnitude.asc())
+        order = MessierObject.Magnitude
     elif sort_by == 'dec':
-        query = query.order_by(MessierObject.Dec.asc())
+        order = MessierObject.Dec
     else:
-        query = query.order_by(MessierObject.Number.asc())
+        order = MessierObject.Number
+
+    if reverse_sort:
+        order = order.desc()
+    else:
+        order = order.asc()
+
+    query = query.order_by(order)
+    # app.logger.debug(f"Query: {str(query)}")
 
     messier_objects = query.all()
     messier_list = [obj.to_dict() for obj in messier_objects]
