@@ -6,16 +6,15 @@
       <button @click="goToTableView" class="bg-gray-800 text-white">Table View</button>
     </div>
     <FilterSortOptions 
-      v-if="currentTab !== 'detail'" 
+      v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
       @filter="filterMessierObjects" 
       @sort="sortMessierObjects" 
     />
     <component 
       :is="currentComponent" 
-      :messierObjects="filteredMessierObjects" 
       v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
     ></component>
-    <router-view :messierObjects="messierObjects"></router-view> <!-- Pass messierObjects as props -->
+    <router-view :messierObjects="filteredMessierObjects"></router-view> <!-- Pass messierObjects as props -->
   </div>
 </template>
 
@@ -34,6 +33,7 @@ export default {
   },
   data() {
     return {
+      isDarkMode: true,
       currentTab: 'box',
       messierObjects: [],
       filteredMessierObjects: [],
@@ -45,7 +45,13 @@ export default {
   computed: {
     currentComponent() {
       return this.currentTab === 'box' ? MessiersBox : MessiersTable;
+    },
+    appClasses() {
+      return {
+        'dark': this.isDarkMode
+      };
     }
+
   },
   mounted() {
     this.fetchMessierObjects();
@@ -54,10 +60,10 @@ export default {
     fetchMessierObjects() {
       const params = {
         sort_by: this.sortOrder,
+        filter_captured: this.filterCaptured,
         filter_season: this.filterSeason,
         filter_type: this.filterType,
         filter_constellation: this.filterConstellation,
-        filter_captured: this.filterCaptured
       };
 
       axios.get('http://localhost:5000/api/messier', { params })
@@ -69,11 +75,11 @@ export default {
         console.error("Error fetching Messier objects:", error);
       });
     },
-    filterMessierObjects({ season, type, constellation, captured }) {
+    filterMessierObjects({ captured, season, type, constellation }) {
+      this.filterCaptured = captured;
       this.filterSeason = season;
       this.filterType = type;
       this.filterConstellation = constellation;
-      this.filterCaptured = captured;
       this.fetchMessierObjects();
     },
     sortMessierObjects(order) {

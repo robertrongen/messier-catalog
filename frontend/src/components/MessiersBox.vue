@@ -43,8 +43,8 @@
         methods: {
             getImagePath(object) {
                 const isHovered = this.hoveredImage === object.Messier;
-                const type = object.Captured ? 'pos' : 'neg';
-                const hoverType = object.Captured ? 'roro' : 'pos';
+                const type = object.Captured ? 'roro' : 'neg';
+                const hoverType = object.Captured ? 'pos' : 'pos';
                 return isHovered 
                     ? require(`@/assets/${hoverType}/${object.Messier}.jpg`) 
                     : require(`@/assets/${type}/${object.Messier}.jpg`);

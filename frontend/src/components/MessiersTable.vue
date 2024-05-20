@@ -33,8 +33,8 @@
                     <td>{{ object.Magnitude }}</td>
                     <td>{{ object.Size }}</td>
                     <td>{{ object.Distance }}</td>
-                    <td>{{ object.RightAscension }}</td>
-                    <td>{{ object.Declination }}</td>
+                    <td>{{ object.RA }}</td>
+                    <td>{{ object.Dec }}</td>
                     <td>{{ object.Captured ? 'Yes' : 'No' }}</td>
                     <td>{{ object.CapYear }}</td>
                     <td>{{ object.Remarks }}</td>

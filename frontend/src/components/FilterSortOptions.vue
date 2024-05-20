@@ -63,6 +63,7 @@
                 <option value="season">Sort by Season</option>
                 <option value="type">Sort by Type</option>
                 <option value="magnitude">Sort by Magnitude</option>
+                <option value="dec">Sort by Declination</option>
             </select>
         </div>
     </div>
@@ -73,21 +74,20 @@
         name: 'FilterSortOptions',
         data() {
             return {
-                filterQuery: '',
+                filterCaptured: '',
                 filterSeason: '',
                 filterType: '',
                 filterConstellation: '',
-                filterCaptured: '',
                 sortOrder: 'number'
             };
         },
         methods: {
             onFilter() {
                 this.$emit('filter', {
+                    captured: this.filterCaptured,
                     season: this.filterSeason,
                     type: this.filterType,
                     constellation: this.filterConstellation,
-                    captured: this.filterCaptured
                 });
             },
             onSort() {

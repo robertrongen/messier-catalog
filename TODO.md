@@ -1,2 +1,2 @@
 - [ ] Filter for Season, Type, Constellation, Captured
-- [ ] Styling using 
+- [ ] Styling using Tailwind
