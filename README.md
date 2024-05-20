@@ -1,13 +1,15 @@
-# messier-catalog
+# Deepsky / Messier Catalog
 
 Image source: https://in-the-sky.org/data/catalogue.php
 Atlas and datbase source: https://www.datastro.eu/explore/dataset/ngc-ic-messier-catalog/images/?sort=name
 
 # Installation
 ## Frontend: Install npm packages
+`cd frontend`
 `npm install`
+`npm run build`
 ## Backend
-`cd backend`
+`cd ../backend`
 ### Add .env variables
 Create and fill in .env keys using example.env for:
 - SESSION_KEY: Create Web session key:
