@@ -1,4 +1,4 @@
-# astro-caps-frontend
+# deepsky-frontend
 
 ## Project setup
 ```
