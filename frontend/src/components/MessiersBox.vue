@@ -1,6 +1,6 @@
 <!-- frontend/src/components/MessiersBox.vue -->
 <template>
-    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 p-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 gap-4 p-2">
         <div v-for="object in messierObjects" :key="object.Messier" class="relative"
             @mouseover="hoveredImage = object.Messier" @mouseleave="hoveredImage = null">
             <div class="imgtitle">
@@ -34,7 +34,7 @@ export default {
     methods: {
         getImagePath(object) {
             const isHovered = this.hoveredImage === object.Messier;
-            const type = object.Captured ? "roro" : "neg";
+            const type = object.Captured ? "roro_th" : "neg";
             const hoverType = object.Captured ? "pos" : "pos";
             return isHovered
                 ? require(`@/assets/${hoverType}/${object.Messier}.jpg`)

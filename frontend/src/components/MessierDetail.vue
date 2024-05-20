@@ -1,11 +1,41 @@
 <!-- frontend/src/components/MessierDetail.vue -->
 <template>
+    <div class="mt-4 flex justify-between">
+        <button @click="goToPreviousMessier" :disabled="!hasPrevious" class="btn">
+            Previous
+        </button>
+        <button @click="goToNextMessier" :disabled="!hasNext" class="btn">
+            Next
+        </button>
+    </div>
+    <h2 class="text-2xl font-bold mb-4">Messier Object {{ messier.Messier }}</h2>
     <div class="p-4 flex flex-wrap">
         <!-- Left Box: Details Table -->
-        <div class="w-full md:w-1/2 md:pr-4">
-            <h2 class="text-2xl font-bold mb-4">Messier Object {{ messier.Messier }}</h2>
+        <div class="w-full md:w-1/3 md:pr-4">
+            <div class="annotations mt-4 md:mt-0 w-full">
+                <h3 class="text-xl font-bold mb-2">Add/Edit Annotation</h3>
+                <input type="number" v-model="newCaptured" placeholder="Captured (0 or 1)"
+                    class="form-input mt-1 block w-full" />
+                <input type="number" v-model="newCapYear" placeholder="Capture Year"
+                    class="form-input mt-1 block w-full" />
+                <textarea v-model="newRemark" placeholder="Add annotation content..."
+                    class="form-textarea mt-1 block w-full"></textarea>
+                <button @click="updateAnnotation" class="btn mt-4">Save Annotation</button>
+            </div>
             <table class="table-auto w-full text-left border-collapse border border-gray-200 dark:border-gray-700 mb-4">
                 <tbody>
+                    <tr class="border-t border-gray-200 dark:border-gray-700">
+                        <td class="py-2 px-4 font-bold">Captured</td>
+                        <td class="py-2 px-4">{{ messier.Captured }}</td>
+                    </tr>
+                    <tr class="border-t border-gray-200 dark:border-gray-700">
+                        <td class="py-2 px-4 font-bold">Capture Year</td>
+                        <td class="py-2 px-4">{{ messier.CapYear }}</td>
+                    </tr>
+                    <tr class="border-t border-gray-200 dark:border-gray-700">
+                        <td class="py-2 px-4 font-bold">Remarks</td>
+                        <td class="py-2 px-4">{{ messier.Remarks }}</td>
+                    </tr>
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">NGC</td>
                         <td class="py-2 px-4">{{ messier.NGC }}</td>
@@ -54,49 +84,19 @@
                         <td class="py-2 px-4 font-bold">Year</td>
                         <td class="py-2 px-4">{{ messier.Year }}</td>
                     </tr>
-                    <tr class="border-t border-gray-200 dark:border-gray-700">
-                        <td class="py-2 px-4 font-bold">Captured</td>
-                        <td class="py-2 px-4">{{ messier.Captured }}</td>
-                    </tr>
-                    <tr class="border-t border-gray-200 dark:border-gray-700">
-                        <td class="py-2 px-4 font-bold">Capture Year</td>
-                        <td class="py-2 px-4">{{ messier.CapYear }}</td>
-                    </tr>
-                    <tr class="border-t border-gray-200 dark:border-gray-700">
-                        <td class="py-2 px-4 font-bold">Remarks</td>
-                        <td class="py-2 px-4">{{ messier.Remarks }}</td>
-                    </tr>
                 </tbody>
             </table>
-            <div class="mt-4 flex justify-between">
-                <button @click="goToPreviousMessier" :disabled="!hasPrevious" class="btn">
-                    Previous
-                </button>
-                <button @click="goToNextMessier" :disabled="!hasNext" class="btn">
-                    Next
-                </button>
-            </div>
-            <div class="annotations mt-4 md:mt-0 w-full">
-                <h3 class="text-xl font-bold mb-2">Add/Edit Annotation</h3>
-                <input type="number" v-model="newCaptured" placeholder="Captured (0 or 1)"
-                    class="form-input mt-1 block w-full" />
-                <input type="number" v-model="newCapYear" placeholder="Capture Year"
-                    class="form-input mt-1 block w-full" />
-                <textarea v-model="newRemark" placeholder="Add annotation content..."
-                    class="form-textarea mt-1 block w-full"></textarea>
-                <button @click="updateAnnotation" class="btn mt-4">Save Annotation</button>
-            </div>
         </div>
+
+
         <!-- Right Box: Atlas Image -->
-        <div class="w-full md:w-1/2 md:pl-4 flex flex-col items-center">
+        <div class="w-full md:w-2/3 md:pr-4">
+            <img :src="posImagePath" alt="pos Image" v-if="posImagePath && !roroImagePath" class="w-full" style="max-width: 180px; max-height: 180px; margin: 0 auto;" />
             <div class="images mt-8 w-full">
+                <img :src="roroImagePath" alt="roro Image" v-if="roroImagePath" class="w-full" />
+                <img :src="amImagePath" alt="roro Image" v-if="amImagePath" class="w-full" />
                 <img :src="atlasImagePath" alt="atlas Image" v-if="atlasImagePath" class="w-full mb-4" />
             </div>
-        </div>
-    </div>
-    <div class="w-full md:w-1/2 md:pl-4 flex flex-col items-center">
-        <div class="images mt-8 w-full">
-            <img :src="roroImagePath" alt="roro Image" v-if="roroImagePath" class="w-full" />
         </div>
     </div>
 
@@ -143,7 +143,10 @@ export default {
             if (messier) {
                 this.messier = messier;
                 this.atlasImagePath = this.getAtlasImagePath(messier.Messier);
+                this.roroThImagePath = this.getRoroThImagePath(messier.Messier);
                 this.roroImagePath = this.getRoroImagePath(messier.Messier);
+                this.posImagePath = this.getPosImagePath(messier.Messier);
+                this.amImagePath = this.getAmImagePath(messier.Messier);
             }
         },
         updateAnnotation() {
@@ -188,8 +191,32 @@ export default {
                 return null;
             }
         },
+        getRoroThImagePath(messierNumber) {
+            const images = require.context('@/assets/roro_th', false, /\.jpg$/);
+            try {
+                return images(`./${messierNumber}.jpg`);
+            } catch (e) {
+                return null;
+            }
+        },
         getRoroImagePath(messierNumber) {
             const images = require.context('@/assets/roro', false, /\.jpg$/);
+            try {
+                return images(`./${messierNumber}.jpg`);
+            } catch (e) {
+                return null;
+            }
+        },
+        getPosImagePath(messierNumber) {
+            const images = require.context('@/assets/pos', false, /\.jpg$/);
+            try {
+                return images(`./${messierNumber}.jpg`);
+            } catch (e) {
+                return null;
+            }
+        },
+        getAmImagePath(messierNumber) {
+            const images = require.context('@/assets/amateur', false, /\.jpg$/);
             try {
                 return images(`./${messierNumber}.jpg`);
             } catch (e) {

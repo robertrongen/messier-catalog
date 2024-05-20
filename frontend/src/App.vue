@@ -2,6 +2,9 @@
 <template>
   <div id="app" :class="isDarkMode ? 'dark' : 'light'">
     <div class="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
+      <div>
+        <h1 class="text-4xl font-bold pt-4 mb-1">The Messier Catalog</h1>
+      </div>
       <div class="tabs p-4">
         <button @click="goToBoxView" class="btn">
           Box View
@@ -13,15 +16,10 @@
           Toggle Theme
         </button>
       </div>
-      <FilterSortOptions
-        v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
-        @filter="filterMessierObjects"
-        @sort="sortMessierObjects"
-      />
-      <component
-        :is="currentComponent"
-        v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
-      ></component>
+      <FilterSortOptions v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
+        @filter="filterMessierObjects" @sort="sortMessierObjects" />
+      <component :is="currentComponent" v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'">
+      </component>
       <router-view :messierObjects="filteredMessierObjects"></router-view>
     </div>
   </div>
@@ -121,9 +119,11 @@ export default {
 .btn {
   @apply py-2 px-4 m-2 cursor-pointer transition-colors duration-300;
 }
+
 .dark .btn {
   @apply bg-gray-700 text-white hover:bg-gray-600;
 }
+
 .btn {
   @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
 }

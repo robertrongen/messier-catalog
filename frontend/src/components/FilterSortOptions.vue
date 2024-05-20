@@ -1,6 +1,6 @@
 <!-- frontend/src/components/FilterSortOptions.vue -->
 <template>
-    <div class="flex justify-between p-4">
+    <div class="flex justify-between p-2">
         <div class="flex space-x-4">
             <select v-model="filterSeason" @change="onFilter"
                 class="filter-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
@@ -63,7 +63,7 @@
         </div>
         <div class="flex items-center space-x-4">
             <select v-model="sortOrder" @change="onSort"
-                class="sort-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
+                class="sort-select form-select block w-full h-8 mt-1 dark:bg-gray-700 dark:text-white">
                 <option value="number">Sort by Number</option>
                 <option value="season">Sort by Season</option>
                 <option value="type">Sort by Type</option>
@@ -73,7 +73,7 @@
         </div>
         <div class="flex items-center">
             <input type="checkbox" id="reverseSort" v-model="reverseSort" @change="onSort"
-                class="form-checkbox h-5 w-5 text-gray-600 dark:text-gray-400">
+                class="form-checkbox h-8 w-5 text-gray-600 dark:text-gray-400">
             <label for="reverseSort" class="ml-2 dark:text-white">Reverse Order</label>
         </div>
     </div>
