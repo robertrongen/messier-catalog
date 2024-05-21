@@ -72,7 +72,7 @@ export default {
       };
 
       axios
-        .get("http://localhost:5000/api/messier", { params })
+      .get(`${process.env.VUE_APP_API_BASE_URL}/messier`, { params })
         .then((response) => {
           this.messierObjects = response.data;
           this.filteredMessierObjects = response.data;

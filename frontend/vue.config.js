@@ -1,10 +1,13 @@
 // vue.config.js
 module.exports = {
-  configureWebpack: {
-    resolve: {
-      alias: {
-        '@': require('path').resolve(__dirname, 'src')
-      }
+    publicPath: process.env.NODE_ENV === 'production'
+      ? '/deepsky/'
+      : '/'
+    configureWebpack: {
+      resolve: {
+        alias: {
+          '@': require('path').resolve(__dirname, 'src')
+        }
     },
     plugins: [
       new (require('webpack')).DefinePlugin({
