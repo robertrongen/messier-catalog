@@ -5,16 +5,27 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import requests  # Import requests module
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+# Create a file handler and set level to debug
+file_handler = RotatingFileHandler('app.log', maxBytes=10240, backupCount=3)
+file_handler.setLevel(logging.DEBUG)
+
+# Create a logging format
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///AstroCaps.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+# Add the handlers to the app's logger
+app.logger.addHandler(file_handler)
 
 # Initialize extensions
 db = SQLAlchemy(app)

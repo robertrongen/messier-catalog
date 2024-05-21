@@ -5,3 +5,4 @@ catalogue-de-messier.json
 backend/venv/*
 backend/migrations/*
 backend/test_api.py
+backend/app.log
