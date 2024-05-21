@@ -5,7 +5,6 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import requests  # Import requests module
 import logging
-from flask_debugtoolbar import DebugToolbarExtension
 import os
 from dotenv import load_dotenv
 
