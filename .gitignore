@@ -4,3 +4,4 @@ catalogue-de-messier.json
 /node_modules/*
 backend/venv/*
 backend/migrations/*
+backend/test_api.py
