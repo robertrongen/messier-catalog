@@ -155,7 +155,7 @@ export default {
                 CapYear: this.newCapYear,
                 Remarks: this.newRemark
             };
-            axios.post(`http://localhost:5000/api/messier/${this.id}`, updatedAnnotation)
+            axios.post(`/messier/${this.id}`, updatedAnnotation)
                 .then(response => {
                     this.messier = response.data;
                 })
