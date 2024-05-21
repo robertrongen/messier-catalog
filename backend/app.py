@@ -150,6 +150,15 @@ def get_or_update_messier_object(messier_number):
         else:
             return jsonify({'error': 'Messier object not found'}), 404
 
+@app.route('/api/test', methods=['GET'])
+def test_route():
+    try:
+        app.logger.debug("Received request for /api/test")
+        return jsonify({"message": "Test route works"})
+    except Exception as e:
+        app.logger.error(f"Error fetching test data: {str(e)}")
+        return jsonify({'error': 'An error occurred'}), 500
+
 @app.route('/')
 def hello():
     return "Hello, Astro Caps!"
