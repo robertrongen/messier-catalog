@@ -4,12 +4,12 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import requests  # Import requests module
-# import logging
-# from flask_debugtoolbar import DebugToolbarExtension
+import logging
+from flask_debugtoolbar import DebugToolbarExtension
 import os
 from dotenv import load_dotenv
 
-# logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 load_dotenv()
 
 app = Flask(__name__)
@@ -53,45 +53,51 @@ class MessierObject(db.Model):
 
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():
-    sort_by = request.args.get('sort_by', 'number')
-    reverse_sort = request.args.get('reverse_sort', 'false').lower() == 'true'
-    filter_captured = request.args.get('filter_captured')
-    filter_season = request.args.get('filter_season')
-    filter_type = request.args.get('filter_type')
-    filter_constellation = request.args.get('filter_constellation')
+    try:
+        app.logger.debug("Received request for /api/messier")
+        sort_by = request.args.get('sort_by', 'number')
+        reverse_sort = request.args.get('reverse_sort', 'false').lower() == 'true'
+        filter_captured = request.args.get('filter_captured')
+        filter_season = request.args.get('filter_season')
+        filter_type = request.args.get('filter_type')
+        filter_constellation = request.args.get('filter_constellation')
 
-    query = MessierObject.query
-    if filter_captured:
-        query = query.filter_by(Captured=int(filter_captured))
-    if filter_season:
-        query = query.filter_by(Season=filter_season)
-    if filter_type:
-        query = query.filter_by(Type=filter_type)
-    if filter_constellation:
-        query = query.filter_by(Constellation=filter_constellation)
+        query = MessierObject.query
+        if filter_captured:
+            query = query.filter_by(Captured=int(filter_captured))
+        if filter_season:
+            query = query.filter_by(Season=filter_season)
+        if filter_type:
+            query = query.filter_by(Type=filter_type)
+        if filter_constellation:
+            query = query.filter_by(Constellation=filter_constellation)
 
-    if sort_by == 'season':
-        order = MessierObject.Season
-    elif sort_by == 'type':
-        order = MessierObject.Type
-    elif sort_by == 'magnitude':
-        order = MessierObject.Magnitude
-    elif sort_by == 'dec':
-        order = MessierObject.Dec
-    else:
-        order = MessierObject.Number
+        if sort_by == 'season':
+            order = MessierObject.Season
+        elif sort_by == 'type':
+            order = MessierObject.Type
+        elif sort_by == 'magnitude':
+            order = MessierObject.Magnitude
+        elif sort_by == 'dec':
+            order = MessierObject.Dec
+        else:
+            order = MessierObject.Number
 
-    if reverse_sort:
-        order = order.desc()
-    else:
-        order = order.asc()
+        if reverse_sort:
+            order = order.desc()
+        else:
+            order = order.asc()
 
-    query = query.order_by(order)
-    # app.logger.debug(f"Query: {str(query)}")
+        query = query.order_by(order)
+        # app.logger.debug(f"Query: {str(query)}")
 
-    messier_objects = query.all()
-    messier_list = [obj.to_dict() for obj in messier_objects]
-    return jsonify(messier_list)
+        messier_objects = query.all()
+        messier_list = [obj.to_dict() for obj in messier_objects]
+        app.logger.debug(f"Fetched data: {messier_list}")
+        return jsonify(messier_list)
+    except Exception as e:
+        app.logger.error(f"Error fetching Messier data: {str(e)}")
+        return jsonify({'error': 'An error occurred'}), 500
 
 @app.route('/api/messier/<messier_number>')
 def get_messier_object(messier_number):
@@ -138,4 +144,4 @@ def hello():
     return "Hello, Astro Caps!"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
