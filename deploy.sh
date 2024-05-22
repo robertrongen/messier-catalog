@@ -3,6 +3,11 @@
 # Stop script on error
 set -e
 
+# Source NVM to add Node.js and npm to PATH
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 # Navigate to the project directory
 cd /home/robert/github/deepsky
 
