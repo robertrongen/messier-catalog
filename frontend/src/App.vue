@@ -46,6 +46,7 @@ export default {
       filteredMessierObjects: [],
       currentMessier: null,
       filterCaptured: null,
+      filterPlanned: null,
       sortOrder: "number",
       reverseSort: false
     };
@@ -69,6 +70,7 @@ export default {
         filter_season: this.filterSeason,
         filter_type: this.filterType,
         filter_constellation: this.filterConstellation,
+        filter_planned: this.filterPlanned
       };
 
       axios
@@ -81,11 +83,12 @@ export default {
           console.error("Error fetching Messier objects:", error);
         });
     },
-    filterMessierObjects({ captured, season, type, constellation }) {
+    filterMessierObjects({ captured, season, type, constellation, planned }) {
       this.filterCaptured = captured;
       this.filterSeason = season;
       this.filterType = type;
       this.filterConstellation = constellation;
+      this.filterPlanned = planned;
       this.fetchMessierObjects();
     },
     sortMessierObjects({ sortOrder, reverseSort }) {

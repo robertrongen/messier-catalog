@@ -6,3 +6,7 @@ backend/venv/*
 backend/migrations/*
 backend/test_api.py
 backend/app.log
+backend/instance/*
+backend/__pycache__/*
+deploy_dev.sh
+backend/instance/AstroCaps.db

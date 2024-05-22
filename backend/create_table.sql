@@ -18,5 +18,6 @@ CREATE TABLE MessierObjects (
     Year INTEGER, 
     Captured INTEGER,
     CapYear INTEGER,
-    Remarks TXT
+    Remarks TXT,
+    Planned INTEGER
 );

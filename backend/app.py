@@ -1,8 +1,11 @@
 # backend/app.py
+from models import db, MessierObject
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+# from flask_security import Security, SQLAlchemyUserDatastore, auth_required, roles_required
+# from flask_uploads import UploadSet, configure_uploads, IMAGES
 import requests  # Import requests module
 import logging
 from logging.handlers import RotatingFileHandler
@@ -24,42 +27,20 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///AstroCaps.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+# app.config['UPLOADED_PHOTOS_DEST'] = 'static/uploads'
 # Add the handlers to the app's logger
 app.logger.addHandler(file_handler)
 
 # Initialize extensions
-db = SQLAlchemy(app)
+db.init_app(app)  # Properly initialize the db with the app
 CORS(app)
 migrate = Migrate(app, db)
 
-class MessierObject(db.Model):
-    __tablename__ = 'MessierObjects'
-    Number = db.Column(db.String, primary_key=True)
-    Messier = db.Column(db.String)
-    NGC = db.Column(db.String, nullable=True)
-    Name = db.Column(db.String, nullable=True)
-    Type = db.Column(db.String)
-    SubType = db.Column(db.String)
-    Season = db.Column(db.String)
-    Magnitude = db.Column(db.Float)
-    Const = db.Column(db.String)
-    ConstEnglish = db.Column(db.String)
-    Constellation = db.Column(db.String)
-    RA = db.Column(db.String)
-    Dec = db.Column(db.String)
-    Distance = db.Column(db.Float)
-    Size = db.Column(db.String)
-    Discoverer = db.Column(db.String, nullable=True)
-    Year = db.Column(db.Float, nullable=True)
-    Captured = db.Column(db.Integer, nullable=True)
-    CapYear = db.Column(db.Integer, nullable=True)
-    Remarks = db.Column(db.Text, nullable=True)
+# photos = UploadSet('photos', IMAGES)
+# configure_uploads(app, photos)
 
-    def __repr__(self):
-        return f'<MessierObject {self.Messier}>'
-    
-    def to_dict(self):
-        return {field: getattr(self, field) for field in self.__table__.columns.keys()}
+# user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+# security = Security(app, user_datastore)
 
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():
@@ -70,6 +51,7 @@ def get_all_messier_objects():
         filter_season = request.args.get('filter_season')
         filter_type = request.args.get('filter_type')
         filter_constellation = request.args.get('filter_constellation')
+        filter_planned = request.args.get('filter_planned')
 
         query = MessierObject.query
         if filter_captured:
@@ -80,7 +62,11 @@ def get_all_messier_objects():
             query = query.filter_by(Type=filter_type)
         if filter_constellation:
             query = query.filter_by(Constellation=filter_constellation)
+        if filter_planned:
+            query = query.filter_by(Planned=int(filter_planned))
 
+        if sort_by == 'number':
+            order = MessierObject.Number
         if sort_by == 'season':
             order = MessierObject.Season
         elif sort_by == 'type':
@@ -143,6 +129,7 @@ def get_or_update_messier_object(messier_number):
             obj.Captured = data.get('Captured', obj.Captured)
             obj.CapYear = data.get('CapYear', obj.CapYear)
             obj.Remarks = data.get('Content', obj.Remarks)
+            obj.Planned = data.get('Planned', obj.Planned)
             db.session.commit()
             return jsonify(obj.to_dict()), 200
         else:
@@ -159,7 +146,7 @@ def test_route():
 
 @app.route('/')
 def hello():
-    return "Hello, Astro Caps!"
+    return "Welcome to the interactive deepsky messier catalog!"
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

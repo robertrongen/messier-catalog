@@ -60,6 +60,12 @@
                 <option value="1">Captured</option>
                 <option value="0">Not Captured</option>
             </select>
+            <select v-model="filterPlanned" @change="onFilter"
+                class="filter-select form-select block w-full mt-1 dark:bg-gray-700 dark:text-white">
+                <option value="">All</option>
+                <option value="1">Planned</option>
+                <option value="0">Not Planned</option>
+            </select>
         </div>
         <div class="flex items-center space-x-4">
             <select v-model="sortOrder" @change="onSort"
@@ -88,6 +94,7 @@ export default {
             filterSeason: '',
             filterType: '',
             filterConstellation: '',
+            filterPlanned: '',
             sortOrder: 'number',
             reverseSort: false
         };
@@ -99,6 +106,7 @@ export default {
                 season: this.filterSeason,
                 type: this.filterType,
                 constellation: this.filterConstellation,
+                planned: this.filterPlanned
             });
         },
         onSort() {

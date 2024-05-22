@@ -18,6 +18,7 @@
                     <th class="p-2 text-left">Declination</th>
                     <th class="p-2 text-left">Captured</th>
                     <!-- <th class="p-2 text-left">Capture Year</th> -->
+                    <th class="p-2 text-left">Planned?</th>
                     <!-- <th class="p-2 text-left">Remarks</th> -->
                 </tr>
             </thead>
@@ -41,6 +42,7 @@
                     <td class="text-right p-2">{{ object.Dec }}</td>
                     <td class="text-left p-2">{{ object.Captured ? 'Yes' : 'No' }}</td>
                     <!-- <td class="text-right p-2">{{ object.CapYear }}</td> -->
+                    <td class="text-right p-2">{{ object.Planned }}</td>
                     <!-- <td class="text-left p-2">{{ object.Remarks }}</td> -->
                 </tr>
             </tbody>

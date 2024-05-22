@@ -18,6 +18,8 @@
                     class="form-input mt-1 block w-full" />
                 <input type="number" v-model="newCapYear" placeholder="Capture Year"
                     class="form-input mt-1 block w-full" />
+                <input type="number" v-model="newPlanned" placeholder="Planned"
+                    class="form-input mt-1 block w-full" />
                 <textarea v-model="newRemark" placeholder="Add annotation content..."
                     class="form-textarea mt-1 block w-full"></textarea>
                 <button @click="updateAnnotation" class="btn mt-4">Save Annotation</button>
@@ -31,6 +33,10 @@
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">Capture Year</td>
                         <td class="py-2 px-4">{{ messier.CapYear }}</td>
+                    </tr>
+                    <tr class="border-t border-gray-200 dark:border-gray-700">
+                        <td class="py-2 px-4 font-bold">Planned?</td>
+                        <td class="py-2 px-4">{{ messier.Planned }}</td>
                     </tr>
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">Remarks</td>
@@ -91,7 +97,8 @@
 
         <!-- Right Box: Atlas Image -->
         <div class="w-full md:w-2/3 md:pr-4">
-            <img :src="posImagePath" alt="pos Image" v-if="posImagePath && !roroImagePath" class="w-full" style="max-width: 180px; max-height: 180px; margin: 0 auto;" />
+            <img :src="posImagePath" alt="pos Image" v-if="posImagePath && !roroImagePath" class="w-full"
+                style="max-width: 180px; max-height: 180px; margin: 0 auto;" />
             <div class="images mt-8 w-full">
                 <img :src="roroImagePath" alt="roro Image" v-if="roroImagePath" class="w-full" />
                 <img :src="amImagePath" alt="roro Image" v-if="amImagePath" class="w-full" />
@@ -118,6 +125,7 @@ export default {
             roroImagePath: null,
             newCaptured: null,
             newCapYear: null,
+            newPlanned: null,
             newRemark: ''
         };
     },
@@ -153,6 +161,7 @@ export default {
             const updatedAnnotation = {
                 Captured: this.newCaptured,
                 CapYear: this.newCapYear,
+                Planned: this.newPlanned,
                 Remarks: this.newRemark
             };
             axios
