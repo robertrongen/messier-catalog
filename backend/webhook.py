@@ -9,7 +9,7 @@ app = Flask(__name__)
 def webhook():
     if request.method == 'POST':
         # Trigger the deployment script
-        subprocess.call(['bash', '~/github/deepsky/deploy.sh'])
+        subprocess.call(['bash', '/home/robert/github/deepsky/deploy.sh'])
         return 'Webhook received and deployment script triggered', 200
 
 if __name__ == '__main__':
