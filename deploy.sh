@@ -41,3 +41,6 @@ sudo systemctl restart deepsky
 
 # Restart Apache to apply changes
 sudo systemctl restart apache2
+
+# Log the completion
+echo "Deployment completed at $(date)" >> /var/log/deploy.log
