@@ -4,7 +4,7 @@
 set -e
 
 # Navigate to the project directory
-cd ~/github/deepsky
+cd /home/robert/github/deepsky
 
 # Pull the latest changes from the repository
 git pull origin main
