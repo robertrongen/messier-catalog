@@ -1,6 +1,6 @@
 # Messier Catalog
 
-This project is a web application that displays the Messier Catalog and can be used to plan and log captured images. 
+This project is a web application that displays the Messier Catalog and can be used to plan and log captured images.
 
 The application includes a Vue.js frontend for displaying the objects and a Flask backend for serving data from an SQLite database.
 
