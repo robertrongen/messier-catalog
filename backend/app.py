@@ -64,7 +64,6 @@ class MessierObject(db.Model):
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():
     try:
-        app.logger.debug("Received request for /api/messier")
         sort_by = request.args.get('sort_by', 'number')
         reverse_sort = request.args.get('reverse_sort', 'false').lower() == 'true'
         filter_captured = request.args.get('filter_captured')
@@ -99,12 +98,11 @@ def get_all_messier_objects():
             order = order.asc()
 
         query = query.order_by(order)
-        # app.logger.debug(f"Query: {str(query)}")
 
         messier_objects = query.all()
         messier_list = [obj.to_dict() for obj in messier_objects]
-        summary = messier_list[:3]  # Get the first 3 items for summary
-        app.logger.debug(f"Fetched {len(messier_list)} Messier objects. Summary: {summary}")
+        # summary = messier_list[:3]  # Get the first 3 items for summary
+        # app.logger.debug(f"Fetched {len(messier_list)} Messier objects. Summary: {summary}")
         return jsonify(messier_list)
     except Exception as e:
         app.logger.error(f"Error fetching Messier data: {str(e)}")
