@@ -15,6 +15,15 @@
         <button @click="toggleTheme" class="btn">
           Toggle Theme
         </button>
+        <button v-if="!isAuthenticated" @click="goToLogin" class="btn">
+          Login
+        </button>
+        <button v-if="isAuthenticated" @click="logout" class="btn">
+          Logout
+        </button>
+        <button v-if="isAuthenticated" @click="goToProfile" class="btn">
+          Profile
+        </button>
       </div>
       <FilterSortOptions v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
         @filter="filterMessierObjects" @sort="sortMessierObjects" />
@@ -48,7 +57,8 @@ export default {
       filterCaptured: null,
       filterPlanned: null,
       sortOrder: "number",
-      reverseSort: false
+      reverseSort: false,
+      isAuthenticated: false
     };
   },
   computed: {
@@ -106,6 +116,21 @@ export default {
     },
     toggleTheme() {
       this.isDarkMode = !this.isDarkMode;
+    },
+    checkAuth() {
+      // Implement your authentication check logic here
+      this.isAuthenticated = !!localStorage.getItem("token");
+    },
+    goToLogin() {
+      this.$router.push({ name: "LoginComponent" });
+    },
+    logout() {
+      localStorage.removeItem("token");
+      this.isAuthenticated = false;
+      this.$router.push({ name: "Box" });
+    },
+    goToProfile() {
+      this.$router.push({ name: "UserProfile" });
     },
     onRouteChange() {
       // console.log('Route changed');

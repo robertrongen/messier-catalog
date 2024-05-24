@@ -1,23 +1,18 @@
 # backend/app.py
-from models import db, MessierObject
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-# from flask_security import Security, SQLAlchemyUserDatastore, auth_required, roles_required
-# from flask_uploads import UploadSet, configure_uploads, IMAGES
-import requests  # Import requests module
+from flask_security import Security, SQLAlchemyUserDatastore, auth_required, current_user, utils, login_user
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 import logging
 from logging.handlers import RotatingFileHandler
 import os
 from dotenv import load_dotenv
+from models import db, MessierObject, User, Role, UserProfile
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-# Create a file handler and set level to debug
 file_handler = RotatingFileHandler('app.log', maxBytes=10240, backupCount=3)
 file_handler.setLevel(logging.DEBUG)
-
-# Create a logging format
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 
@@ -27,20 +22,40 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///AstroCaps.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-# app.config['UPLOADED_PHOTOS_DEST'] = 'static/uploads'
-# Add the handlers to the app's logger
+app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
+app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'
+app.config['SECURITY_PASSWORD_SINGLE_HASH'] = 'bcrypt'
+
 app.logger.addHandler(file_handler)
 
-# Initialize extensions
-db.init_app(app)  # Properly initialize the db with the app
-CORS(app)
+db.init_app(app)
 migrate = Migrate(app, db)
+
+if os.getenv('FLASK_ENV') == 'development':
+    cors_origin = os.getenv('DEV_CORS_ORIGIN')
+else:
+    cors_origin = os.getenv('PROD_CORS_ORIGIN')
+
+CORS(app, resources={r"/api/*": {"origins": cors_origin}}, supports_credentials=True)
 
 # photos = UploadSet('photos', IMAGES)
 # configure_uploads(app, photos)
 
-# user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-# security = Security(app, user_datastore)
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
+@app.route('/api/auth/login', methods=['OPTIONS', 'POST'])
+def login():
+    if request.method == 'OPTIONS':
+        return '', 204
+    email = request.json.get('email')
+    password = request.json.get('password')
+    user = user_datastore.find_user(email=email)
+    if user and utils.verify_password(password, user.password):
+        login_user(user)
+        token = user.get_auth_token()
+        return jsonify({'token': token})
+    return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():
@@ -67,7 +82,7 @@ def get_all_messier_objects():
 
         if sort_by == 'number':
             order = MessierObject.Number
-        if sort_by == 'season':
+        elif sort_by == 'season':
             order = MessierObject.Season
         elif sort_by == 'type':
             order = MessierObject.Type
@@ -87,66 +102,14 @@ def get_all_messier_objects():
 
         messier_objects = query.all()
         messier_list = [obj.to_dict() for obj in messier_objects]
-        # summary = messier_list[:3]  # Get the first 3 items for summary
-        # app.logger.debug(f"Fetched {len(messier_list)} Messier objects. Summary: {summary}")
         return jsonify(messier_list)
     except Exception as e:
         app.logger.error(f"Error fetching Messier data: {str(e)}")
         return jsonify({'error': 'An error occurred'}), 500
 
-@app.route('/api/messier/<messier_number>')
-def get_messier_object(messier_number):
-    obj = MessierObject.query.filter_by(Messier=messier_number).first()
-    if obj:
-        data = obj.to_dict()
-        wikipedia_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{obj.Name}"
-        response = requests.get(wikipedia_url)
-        if response.status_code == 200:
-            wiki_data = response.json()
-            data['wikipedia'] = wiki_data
-        return jsonify(data)
-    else:
-        return jsonify({'error': 'Messier object not found'}), 404
-
-@app.route('/api/messier/<messier_number>', methods=['GET', 'POST'])
-def get_or_update_messier_object(messier_number):
-    if request.method == 'GET':
-        obj = MessierObject.query.filter_by(Messier=messier_number).first()
-        if obj:
-            data = obj.to_dict()
-            wikipedia_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{obj.Name}"
-            response = requests.get(wikipedia_url)
-            if response.status_code == 200:
-                wiki_data = response.json()
-                data['wikipedia'] = wiki_data
-            return jsonify(data)
-        else:
-            return jsonify({'error': 'Messier object not found'}), 404
-    elif request.method == 'POST':
-        data = request.json
-        obj = MessierObject.query.filter_by(Messier=messier_number).first()
-        if obj:
-            obj.Captured = data.get('Captured', obj.Captured)
-            obj.CapYear = data.get('CapYear', obj.CapYear)
-            obj.Remarks = data.get('Content', obj.Remarks)
-            obj.Planned = data.get('Planned', obj.Planned)
-            db.session.commit()
-            return jsonify(obj.to_dict()), 200
-        else:
-            return jsonify({'error': 'Messier object not found'}), 404
-
 @app.route('/api/test', methods=['GET'])
 def test_route():
-    try:
-        app.logger.debug("Received request for /api/test")
-        return jsonify({"message": "Test route works"})
-    except Exception as e:
-        app.logger.error(f"Error fetching test data: {str(e)}")
-        return jsonify({'error': 'An error occurred'}), 500
-
-@app.route('/')
-def hello():
-    return "Welcome to the interactive deepsky messier catalog!"
+    return jsonify({"message": "Test route works"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

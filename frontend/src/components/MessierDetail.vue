@@ -18,17 +18,20 @@
                     class="form-input mt-1 block w-full" />
                 <input type="number" v-model="newCapYear" placeholder="Capture Year"
                     class="form-input mt-1 block w-full" />
-                <input type="number" v-model="newPlanned" placeholder="Planned"
-                    class="form-input mt-1 block w-full" />
+                <input type="number" v-model="newPlanned" placeholder="Planned" class="form-input mt-1 block w-full" />
                 <textarea v-model="newRemark" placeholder="Add annotation content..."
                     class="form-textarea mt-1 block w-full"></textarea>
                 <button @click="updateAnnotation" class="btn mt-4">Save Annotation</button>
+                <input type="file" @change="uploadThumbnail">
+                <button @click="uploadImage">Upload Thumbnail (max 150 x 150 px, must be square)</button>
+                <input type="file" @change="uploadImage">
+                <button @click="uploadImage">Upload Image (max width and height: 1600 px)</button>
             </div>
             <table class="table-auto w-full text-left border-collapse border border-gray-200 dark:border-gray-700 mb-4">
                 <tbody>
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">Captured</td>
-                        <td class="py-2 px-4">{{ messier.Captured }}</td>
+                        <td class="py-2 px-4">{{ messier.Captured ? 'Yes' : 'No' }}</td>
                     </tr>
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">Capture Year</td>
@@ -36,7 +39,7 @@
                     </tr>
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">Planned?</td>
-                        <td class="py-2 px-4">{{ messier.Planned }}</td>
+                        <td class="py-2 px-4">{{ messier.Planned ? 'Yes' : 'No' }}</td>
                     </tr>
                     <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="py-2 px-4 font-bold">Remarks</td>
@@ -171,6 +174,30 @@ export default {
                 })
                 .catch(error => {
                     console.error("Error updating annotation:", error);
+                });
+        },
+        uploadImage(event) {
+            const file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            axios.post('/api/upload', formData)
+                .then(() => {
+                    alert('Image uploaded');
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        uploadThumbnail(event) {
+            const file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            axios.post('/api/upload', formData)
+                .then(() => {
+                    alert('Thumbnail uploaded');
+                })
+                .catch(error => {
+                    console.error(error);
                 });
         },
         getNextMessier() {

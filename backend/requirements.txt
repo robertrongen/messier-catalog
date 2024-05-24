@@ -2,7 +2,9 @@ alembic==1.13.1
 Flask==3.0.3
 Flask_Cors==4.0.1
 Flask_Migrate==4.0.7
+Flask_Reuploaded==1.4.0
 Flask_Security==3.0.0
+Flask_Security_Too==5.4.3
 flask_sqlalchemy==3.1.1
 Flask_Uploads==0.2.1
 pandas==2.2.2

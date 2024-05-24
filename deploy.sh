@@ -41,6 +41,9 @@ pip install -r requirements.txt
 # Apply database migrations if needed
 flask db upgrade
 
+# Initialize the database with an admin user
+python init_db.py
+
 # Restart the backend server
 sudo systemctl restart deepsky
 
