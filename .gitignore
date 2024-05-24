@@ -1,13 +1,3 @@
-AstroCaps.db-journal
-AstroCaps.sqbpro
-catalogue-de-messier.json
 /node_modules/*
-backend/venv/*
-backend/migrations/*
-backend/test_api.py
-backend/app.log
-backend/instance/*
-backend/__pycache__/*
 deploy_dev.sh
-backend/instance/AstroCaps.db
-backend/__pycache__/app.cpython-312.pyc
+
