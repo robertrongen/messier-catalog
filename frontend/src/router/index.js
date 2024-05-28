@@ -7,6 +7,8 @@ import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 import TermsOfService from "@/components/TermsOfService.vue";
 import LoginComponent from "@/components/LoginComponent.vue";
 import OAuthCallback from "@/components/OAuthCallback.vue";
+import UserProfile from "@/components/UserProfile.vue";
+import AdminComponent from "@/components/AdminComponent.vue";
 
 const routes = [
     {
@@ -50,6 +52,16 @@ const routes = [
         name: "OAuthCallback",
         component: OAuthCallback,
     },
+    {
+        path: "/profile",
+        name: "UserProfile",
+        component: UserProfile,
+    },
+    {
+        path: "/admin",
+        name: "Admin",
+        component: AdminComponent,
+    }
 ];
 
 const router = createRouter({

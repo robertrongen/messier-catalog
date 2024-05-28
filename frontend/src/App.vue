@@ -4,32 +4,25 @@
     <div class="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
       <div>
         <h1 class="text-4xl font-bold pt-4 mb-1">The Messier Catalog</h1>
+        <div v-if="isAuthenticated" class="text-right pr-4">
+          <span>Logged in as {{ username }}</span>
+          <span v-if="isAdmin"> (with admin role)</span>
+        </div>
       </div>
       <div class="tabs p-4">
-        <button @click="goToBoxView" class="btn">
-          Box View
-        </button>
-        <button @click="goToTableView" class="btn">
-          Table View
-        </button>
-        <button @click="toggleTheme" class="btn">
-          Toggle Theme
-        </button>
-        <button v-if="!isAuthenticated" @click="goToLogin" class="btn">
-          Login
-        </button>
-        <button v-if="isAuthenticated" @click="logout" class="btn">
-          Logout
-        </button>
-        <button v-if="isAuthenticated" @click="goToProfile" class="btn">
-          Profile
-        </button>
+        <button @click="goToBoxView" class="btn">Box View</button>
+        <button @click="goToTableView" class="btn">Table View</button>
+        <button @click="toggleTheme" class="btn">Toggle Theme</button>
+        <button v-if="!isAuthenticated" @click="goToLogin" class="btn">Login</button>
+        <button v-if="isAuthenticated" @click="logout" class="btn">Logout</button>
+        <button v-if="isAuthenticated" @click="goToProfile" class="btn">Profile</button>
+        <button v-if="isAdmin" @click="goToAdmin" class="btn">Admin</button>
       </div>
       <FilterSortOptions v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'"
         @filter="filterMessierObjects" @sort="sortMessierObjects" />
       <component :is="currentComponent" v-if="!$route.name || $route.name === 'Box' || $route.name === 'Table'">
       </component>
-      <router-view :messierObjects="filteredMessierObjects"></router-view>
+      <router-view :messierObjects="filteredMessierObjects" @update-auth-status="checkAuth"></router-view>
     </div>
   </div>
 </template>
@@ -51,14 +44,20 @@ export default {
     return {
       isDarkMode: true,
       currentTab: "box",
+      currentMessier: null,
       messierObjects: [],
       filteredMessierObjects: [],
-      currentMessier: null,
+      filterSeason: null,
+      filterType: null,
+      filterConstellation: null,
       filterCaptured: null,
       filterPlanned: null,
       sortOrder: "number",
       reverseSort: false,
-      isAuthenticated: false
+      isAuthenticated: false,
+      isAdmin: false,
+      username: '',
+      user: null
     };
   },
   computed: {
@@ -68,6 +67,7 @@ export default {
   },
   mounted() {
     this.fetchMessierObjects();
+    this.checkAuth();
     this.isDarkMode = localStorage.getItem("isDarkMode") === "false" ? true : false; // Dark mode by default
     localStorage.setItem("isDarkMode", this.isDarkMode);
   },
@@ -84,7 +84,7 @@ export default {
       };
 
       axios
-      .get(`${process.env.VUE_APP_API_BASE_URL}/messier`, { params })
+        .get(`${process.env.VUE_APP_API_BASE_URL}/messier`, { params })
         .then((response) => {
           this.messierObjects = response.data;
           this.filteredMessierObjects = response.data;
@@ -118,8 +118,26 @@ export default {
       this.isDarkMode = !this.isDarkMode;
     },
     checkAuth() {
-      // Implement your authentication check logic here
-      this.isAuthenticated = !!localStorage.getItem("token");
+      const token = localStorage.getItem("token");
+      if (token) {
+        axios.get(`${process.env.VUE_APP_API_BASE_URL}/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+          .then(response => {
+            this.isAuthenticated = true;
+            this.user = response.data;
+            this.username = response.data.username;
+            this.isAdmin = response.data.roles.includes('admin');
+          })
+          .catch(error => {
+            console.error("Error fetching user profile:", error);
+            this.isAuthenticated = false;
+          });
+      } else {
+        this.isAuthenticated = false;
+      }
     },
     goToLogin() {
       this.$router.push({ name: "LoginComponent" });
@@ -127,13 +145,15 @@ export default {
     logout() {
       localStorage.removeItem("token");
       this.isAuthenticated = false;
+      this.isAdmin = false;
+      this.user = null;
       this.$router.push({ name: "Box" });
     },
     goToProfile() {
       this.$router.push({ name: "UserProfile" });
     },
-    onRouteChange() {
-      // console.log('Route changed');
+    goToAdmin() {
+      this.$router.push({ name: "AdminComponent" });
     },
   },
 };

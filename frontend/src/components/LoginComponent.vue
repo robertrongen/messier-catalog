@@ -44,6 +44,9 @@ export default {
             axios.post(`${process.env.VUE_APP_API_BASE_URL}/auth/login`, { email: this.email, password: this.password })
                 .then(response => {
                     localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('username', response.data.username);
+                    localStorage.setItem('role', response.data.role);
+                    this.$emit('update-auth-status', true);
                     this.$router.push({ name: 'Box' });
                 })
                 .catch(error => {

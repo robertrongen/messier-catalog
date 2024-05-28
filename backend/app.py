@@ -35,6 +35,7 @@ if os.getenv('FLASK_ENV') == 'development':
     cors_origin = os.getenv('DEV_CORS_ORIGIN')
 else:
     cors_origin = os.getenv('PROD_CORS_ORIGIN')
+app.logger.error(f"cors_origin: {cors_origin}")
 
 CORS(app, resources={r"/api/*": {"origins": cors_origin}}, supports_credentials=True)
 
@@ -54,8 +55,24 @@ def login():
     if user and utils.verify_password(password, user.password):
         login_user(user)
         token = user.get_auth_token()
-        return jsonify({'token': token})
+        user_data = {
+            'token': token,
+            'username': user.username,
+            'role': user.roles[0].name if user.roles else 'user'
+        }
+        return jsonify(user_data)
     return jsonify({'error': 'Invalid credentials'}), 401
+
+@app.route('/api/profile', methods=['GET'])
+@auth_required('token')
+def user_profile():
+    user = current_user
+    app.logger.debug(f"Current user: {user}")
+    user_data = {
+        'username': user.username,
+        'roles': [role.name for role in user.roles]
+    }
+    return jsonify(user_data)
 
 @app.route('/api/messier', methods=['GET'])
 def get_all_messier_objects():

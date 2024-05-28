@@ -22,8 +22,11 @@
                 <textarea v-model="newRemark" placeholder="Add annotation content..."
                     class="form-textarea mt-1 block w-full"></textarea>
                 <button @click="updateAnnotation" class="btn mt-4">Save Annotation</button>
-                <input type="file" @change="uploadThumbnail">
-                <button @click="uploadImage">Upload Thumbnail (max 150 x 150 px, must be square)</button>
+                <img v-if="annotation.image_filename"
+                    :src="`${process.env.VUE_APP_API_BASE_URL}/static/uploads/${annotation.image_filename}`"
+                    alt="Annotation Image" class="mt-2" />
+                    <input type="file" @change="uploadThumbnail">
+                <button @click="uploadImage"><em>Upload Thumbnail (max 150 x 150 px, must be square)</em></button>
                 <input type="file" @change="uploadImage">
                 <button @click="uploadImage">Upload Image (max width and height: 1600 px)</button>
             </div>
@@ -97,7 +100,6 @@
             </table>
         </div>
 
-
         <!-- Right Box: Atlas Image -->
         <div class="w-full md:w-2/3 md:pr-4">
             <img :src="posImagePath" alt="pos Image" v-if="posImagePath && !roroImagePath" class="w-full"
@@ -109,7 +111,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -129,7 +130,12 @@ export default {
             newCaptured: null,
             newCapYear: null,
             newPlanned: null,
-            newRemark: ''
+            newRemark: '',
+            annotation: {},
+            image: null,
+            posImagePath: null,
+            roroThImagePath: null,
+            amImagePath: null
         };
     },
     computed: {
@@ -142,10 +148,12 @@ export default {
     },
     mounted() {
         this.fetchMessierDetail();
+        this.fetchAnnotation();
     },
     watch: {
         id() {
             this.fetchMessierDetail();
+            this.fetchAnnotation();
         }
     },
     methods: {
@@ -157,48 +165,65 @@ export default {
                 this.roroThImagePath = this.getRoroThImagePath(messier.Messier);
                 this.roroImagePath = this.getRoroImagePath(messier.Messier);
                 this.posImagePath = this.getPosImagePath(messier.Messier);
+
                 this.amImagePath = this.getAmImagePath(messier.Messier);
             }
         },
-        updateAnnotation() {
-            const updatedAnnotation = {
-                Captured: this.newCaptured,
-                CapYear: this.newCapYear,
-                Planned: this.newPlanned,
-                Remarks: this.newRemark
-            };
-            axios
-                .post(`/messier/${this.id}`, updatedAnnotation)
+        fetchAnnotation() {
+            axios.get(`${process.env.VUE_APP_API_BASE_URL}/annotations`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
                 .then(response => {
-                    this.messier = response.data;
+                    this.annotation = response.data.find(a => a.messier_id === parseInt(this.id));
+                    if (this.annotation) {
+                        this.newCaptured = this.annotation.captured;
+                        this.newCapYear = this.annotation.cap_year;
+                        this.newPlanned = this.annotation.planned;
+                        this.newRemark = this.annotation.remarks;
+                    } else {
+                        this.resetAnnotationForm();
+                    }
                 })
                 .catch(error => {
-                    console.error("Error updating annotation:", error);
+                    console.error("Error fetching annotation:", error);
                 });
         },
-        uploadImage(event) {
-            const file = event.target.files[0];
+        updateAnnotation() {
             const formData = new FormData();
-            formData.append('file', file);
-            axios.post('/api/upload', formData)
-                .then(() => {
-                    alert('Image uploaded');
+            formData.append('messier_id', this.id);
+            formData.append('captured', this.newCaptured);
+            formData.append('cap_year', this.newCapYear);
+            formData.append('remarks', this.newRemark);
+            formData.append('planned', this.newPlanned);
+            if (this.image) {
+                formData.append('file', this.image);
+            }
+
+            axios.post(`${process.env.VUE_APP_API_BASE_URL}/annotations`, formData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then(response => {
+                    this.annotation = response.data;
+                    this.resetAnnotationForm();
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error('Error updating annotation:', error);
                 });
         },
-        uploadThumbnail(event) {
-            const file = event.target.files[0];
-            const formData = new FormData();
-            formData.append('file', file);
-            axios.post('/api/upload', formData)
-                .then(() => {
-                    alert('Thumbnail uploaded');
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+        onFileChange(event) {
+            this.image = event.target.files[0];
+        },
+        resetAnnotationForm() {
+            this.newCaptured = false;
+            this.newCapYear = null;
+            this.newPlanned = false;
+            this.newRemark = '';
+            this.image = null;
         },
         getNextMessier() {
             const currentIndex = this.messierObjects.findIndex(m => m.Messier === this.messier.Messier);
@@ -264,7 +289,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .images {
     display: flex;
     flex-direction: column;
