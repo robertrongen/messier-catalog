@@ -53,6 +53,18 @@ The application includes a Vue.js frontend for displaying the objects and a Flas
 
 2. Add environment variables:
     - Create and fill in `.env` keys using `example.env`:
+    - Generate session key with this python code:
+    ```python
+    import os; 
+    print(os.urandom(24).hex())
+    ```
+    - Generate salt with this python code:
+    ```python
+    import secrets
+    # Generate a secure random string of 32 characters
+    security_password_salt = secrets.token_urlsafe(32)
+    print(security_password_salt)
+    ```
 
       ```bash
       cp example.env .env

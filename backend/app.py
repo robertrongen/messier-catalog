@@ -35,7 +35,6 @@ if os.getenv('FLASK_ENV') == 'development':
     cors_origin = os.getenv('DEV_CORS_ORIGIN')
 else:
     cors_origin = os.getenv('PROD_CORS_ORIGIN')
-app.logger.error(f"cors_origin: {cors_origin}")
 
 CORS(app, resources={r"/api/*": {"origins": cors_origin}}, supports_credentials=True)
 
