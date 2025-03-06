@@ -48,12 +48,6 @@ export default {
                     localStorage.setItem('role', response.data.role);
                     this.$emit('update-auth-status', true);
                     this.$router.push({ name: 'Box' });
-                    pendo.initialize({
-                        visitor: {
-                        id: response.data.username,
-                        email: this.email,
-                        }
-                    });
                 })
                 .catch(error => {
                     console.error(error);
